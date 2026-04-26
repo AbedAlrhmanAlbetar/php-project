@@ -1,0 +1,41 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # --- بداية تعديلات الـ CORS القوية ---
+    <IfModule mod_headers.c>
+        # مسح الرؤوس الحالية لمنع مشكلة (multiple values)
+        Header unset Access-Control-Allow-Origin
+        Header unset Access-Control-Allow-Methods
+        Header unset Access-Control-Allow-Headers
+        Header unset Access-Control-Allow-Credentials
+
+        # إعداد الرؤوس من جديد وبشكل وحيد
+        Header set Access-Control-Allow-Origin "http://localhost:5173"
+        Header set Access-Control-Allow-Methods "POST, GET, OPTIONS, PUT, DELETE"
+        Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept"
+        Header set Access-Control-Allow-Credentials "true"
+    </IfModule>
+
+    # التعامل مع طلبات الـ OPTIONS (التي يرسلها المتصفح قبل الـ POST)
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
+    # --- نهاية تعديلات الـ CORS ---
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>

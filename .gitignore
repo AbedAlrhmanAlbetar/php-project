@@ -1,0 +1,14 @@
+# Environment files
+.env
+backend/.env
+frontend/.env
+
+# Dependencies
+backend/vendor/
+frontend/node_modules/
+
+# Logs
+*.log
+
+# Laravel
+backend/storage/*.key
